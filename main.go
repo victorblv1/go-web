@@ -29,7 +29,7 @@ var db *gorm.DB
 
 func main() {
 	var err error
-	db, err = gorm.Open(sqlite.Open("databaese.db"), &gorm.Config{})
+	db, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -83,9 +83,9 @@ func login(c *gin.Context) {
 		return
 	}
 
-	expirationTime := time.Now().Add(15 * time.Hour)
+	expirationTime := time.Now().Add(15 * time.Minute)
 	claims := &Claims{
-		Username: user.Username,
+		Username: input.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -97,6 +97,7 @@ func login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
@@ -104,19 +105,23 @@ func login(c *gin.Context) {
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
+
+		// Check for Bearer prefix and strip it
+		if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+			tokenString = tokenString[7:]
+		}
+
 		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing token provided"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing token"})
 			c.Abort()
 			return
 		}
 
 		claims := &Claims{}
-		// Parse the token
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
 
-		// Check if the token is valid
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
