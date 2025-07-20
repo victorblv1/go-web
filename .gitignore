@@ -1,2 +1,22 @@
-// databases
+# Binaries
+/myapp
+*.exe
+*.out
+
+# Database files
 database.db
+
+# Build artifacts
+bin/
+dist/
+*.log
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Go build cache
+/go.sum
