@@ -32,3 +32,67 @@ go-web/
 ├── main_test.go # Unit and integration tests
 └── database.db # SQLite database (ignored by git)
 ```
+---
+
+## **Getting Started**
+
+### **1. Clone the Repository**
+```bash
+git clone https://github.com/yourusername/go-web.git
+cd go-web
+```
+### **2. Initialize & Tidy Modules**
+```
+go mod tidy
+```
+### **3. Run application server**
+```
+make run
+```
+The server will start at: http://localhost:8080
+---
+## **API Endpoints**
+### Register
+```
+POST /register
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "password": "secret"
+}
+```
+### Login
+```
+POST /login
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "password": "secret"
+}
+```
+will generate your token.
+
+### Protected
+```
+GET /protected
+Authorization: Bearer <your.jwt.token>
+```
+
+### Testing
+```
+make test
+```
+---
+## Makefile commands
+| Command      | Description            |
+| ------------ | ---------------------- |
+| `make run`   | Run the application    |
+| `make test`  | Run all tests          |
+| `make build` | Build the binary       |
+| `make tidy`  | Clean and tidy modules |
+| `make clean` | Remove build artifacts |
+
+## License
+MIT
